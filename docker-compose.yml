@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  fiap.web.inclusivajobs:
+    image: ${DOCKER_REGISTRY-}fiapwebinclusivajobs
+    container_name: inclusivajobs-web
+    build:
+      context: .
+      dockerfile: Fiap.Web.InclusivaJobs/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=InclusivaJobs;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;
+    ports:
+      - "8080:80"
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: inclusivajobs-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourPassword123!
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+volumes:
+  sqlserver_data:

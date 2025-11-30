@@ -1,6 +1,5 @@
-﻿// Controllers/AuthController.cs
+﻿using InclusivaJobs.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using InclusivaJobs.Application.ViewModels;
 
 namespace InclusivaJobs.API.Controllers
 {
