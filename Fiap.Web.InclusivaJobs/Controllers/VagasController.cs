@@ -1,68 +1,83 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Fiap.Web.InclusivaJobs.Services;
+using Fiap.Web.InclusivaJobs.ViewModels;
+using Fiap.Web.InclusivaJobs.Services;
+using Fiap.Web.InclusivaJobs.ViewModels;
 using InclusivaJobs.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
-namespace InclusivaJobs.API.Controllers
+namespace Fiap.Web.InclusivaJobs.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
 	public class VagasController : ControllerBase
 	{
-		// Lista temporária em memória
-		private static List<VagaExibicaoViewModel> _vagas = new()
+		private readonly IVagaService _vagaService;
+
+		public VagasController(IVagaService vagaService)
 		{
-			new VagaExibicaoViewModel
-			{
-				Id = 1,
-				Titulo = "Desenvolvedor .NET Inclusivo",
-				Empresa = "Tech Company",
-				Localizacao = "São Paulo/SP",
-				Salario = 5000,
-				OfereceAcessibilidade = true,
-				VagasPCD = true,
-				QuantidadeVagasPCD = 2,
-				Ativa = true
-			}
-		};
+			_vagaService = vagaService;
+		}
 
 		[HttpGet]
-		public ActionResult<IEnumerable<VagaExibicaoViewModel>> Get()
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		public async Task<ActionResult<IEnumerable<VagaExibicaoViewModel>>> Get()
 		{
-			return Ok(_vagas);
+			var vagas = await _vagaService.GetAllAsync();
+			return Ok(vagas);
 		}
 
 		[HttpGet("{id}")]
-		public ActionResult<VagaExibicaoViewModel> Get(int id)
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult<VagaExibicaoViewModel>> Get(int id)
 		{
-			var vaga = _vagas.FirstOrDefault(v => v.Id == id);
+			var vaga = await _vagaService.GetByIdAsync(id);
 			if (vaga == null)
 				return NotFound(new { message = "Vaga não encontrada" });
 
 			return Ok(vaga);
 		}
 
-		[HttpPost]
-		public ActionResult<VagaExibicaoViewModel> Post([FromBody] VagaCadastroViewModel viewModel)
+		[HttpGet("inclusivas")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		public async Task<ActionResult> GetVagasInclusivas(
+			[FromQuery] int pageNumber = 1,
+			[FromQuery] int pageSize = 10)
 		{
-			var novaVaga = new VagaExibicaoViewModel
+			if (pageNumber < 1) pageNumber = 1;
+			if (pageSize < 1 || pageSize > 50) pageSize = 10;
+
+			var (vagas, totalCount, currentPage, pageSizeUsed) =
+				await _vagaService.GetVagasInclusivasAsync(pageNumber, pageSize);
+
+			var response = new PaginationResponse<VagaExibicaoViewModel>(
+				vagas, totalCount, currentPage, pageSizeUsed);
+
+			return Ok(response);
+		}
+
+		[HttpPost]
+		[ProducesResponseType(StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<ActionResult<VagaExibicaoViewModel>> Post([FromBody] VagaCadastroViewModel viewModel)
+		{
+			try
 			{
-				Id = _vagas.Count + 1,
-				Titulo = viewModel.Titulo,
-				Descricao = viewModel.Descricao,
-				Empresa = viewModel.Empresa,
-				Localizacao = viewModel.Localizacao,
-				Salario = viewModel.Salario,
-				OfereceAcessibilidade = viewModel.OfereceAcessibilidade,
-				RecursosAcessibilidade = viewModel.RecursosAcessibilidade,
-				VagasPCD = viewModel.VagasPCD,
-				QuantidadeVagasPCD = viewModel.QuantidadeVagasPCD,
-				Ativa = true,
-				DataCriacao = DateTime.Now,
-				DataExpiracao = viewModel.DataExpiracao
-			};
+				var novaVaga = await _vagaService.CreateAsync(viewModel);
+				return CreatedAtAction(nameof(Get), new { id = novaVaga.Id }, novaVaga);
+			}
+			catch (ArgumentException ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+		}
 
-			_vagas.Add(novaVaga);
-
-			return CreatedAtAction(nameof(Get), new { id = novaVaga.Id }, novaVaga);
+		[HttpGet("estatisticas-diversidade")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		public async Task<ActionResult> GetEstatisticasDiversidade()
+		{
+			var estatisticas = await _vagaService.GetEstatisticasDiversidadeAsync();
+			return Ok(estatisticas);
 		}
 	}
 }
