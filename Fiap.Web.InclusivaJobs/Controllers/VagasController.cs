@@ -1,7 +1,5 @@
 ﻿using Fiap.Web.InclusivaJobs.Services;
 using Fiap.Web.InclusivaJobs.ViewModels;
-using Fiap.Web.InclusivaJobs.Services;
-using Fiap.Web.InclusivaJobs.ViewModels;
 using InclusivaJobs.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
