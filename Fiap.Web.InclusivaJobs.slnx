@@ -2,5 +2,6 @@
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
+  <Project Path="Fiap.Web.InclusivaJobs.Tests/Fiap.Web.InclusivaJobs.Tests.csproj" Id="25f086c9-30ea-4b1c-84fa-2f2426a8d9c5" />
   <Project Path="Fiap.Web.InclusivaJobs/Fiap.Web.InclusivaJobs.csproj" />
 </Solution>
