@@ -1,4 +1,7 @@
 [README.md](https://github.com/user-attachments/files/27541493/README.md)
+
+Swagger: https://c9707b68-920b-4cf0-9385-18a6d670ab5f-00-3l0awxvpxxo4e.kirk.replit.dev/
+
 # 💼 InclusivaJobs
 
 O InclusivaJobs é uma plataforma web desenvolvida com ASP.NET Core MVC voltada para inclusão e gerenciamento de oportunidades profissionais.
