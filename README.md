@@ -1,6 +1,6 @@
 [README.md](https://github.com/user-attachments/files/27541493/README.md)
 
-Swagger: https://c9707b68-920b-4cf0-9385-18a6d670ab5f-00-3l0awxvpxxo4e.kirk.replit.dev/
+Swagger: [[https://inclusiva-jobs-aspnet--vivisds12.replit.app](https://inclusiva-jobs-aspnet--vivisds12.replit.app)]
 
 # 💼 InclusivaJobs
 
